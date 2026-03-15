@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RepoClonerApp</title>
+  <link rel="icon" type="image/x-icon" href="repocloner.ico" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d1117;
+      --surface:   #161b22;
+      --border:    #30363d;
+      --blue:      #1f6feb;
+      --blue-bright:#58a6ff;
+      --green:     #3fb950;
+      --text:      #c9d1d9;
+      --muted:     #8b949e;
+      --danger:    #f85149;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Grid background ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 48px 48px;
+      opacity: 0.18;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Glow orb ── */
+    body::after {
+      content: '';
+      position: fixed;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(31,111,235,0.18) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 48px;
+      background: rgba(13,17,23,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--blue-bright);
+      letter-spacing: -0.5px;
+    }
+
+    .nav-links { display: flex; gap: 28px; }
+    .nav-links a {
+      font-size: 0.85rem;
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    /* ── Hero ── */
+    .hero {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 100px 24px 80px;
+      gap: 24px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: rgba(31,111,235,0.12);
+      border: 1px solid rgba(88,166,255,0.25);
+      border-radius: 100px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--blue-bright);
+      animation: fadeDown 0.6s ease both;
+    }
+
+    .badge-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+      animation: pulse 2s ease infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    h1 {
+      font-size: clamp(3rem, 8vw, 5.5rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -2px;
+      animation: fadeDown 0.6s 0.1s ease both;
+    }
+
+    h1 span {
+      background: linear-gradient(135deg, var(--blue-bright) 0%, #a0c4ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      max-width: 560px;
+      font-size: 1.15rem;
+      color: var(--muted);
+      line-height: 1.7;
+      font-weight: 400;
+      animation: fadeDown 0.6s 0.2s ease both;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeDown 0.6s 0.3s ease both;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:active { transform: translateY(0); }
+
+    .btn-primary {
+      background: var(--blue);
+      color: #fff;
+      box-shadow: 0 4px 24px rgba(31,111,235,0.35);
+    }
+    .btn-primary:hover { box-shadow: 0 6px 32px rgba(31,111,235,0.5); }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { border-color: var(--blue-bright); color: var(--blue-bright); }
+
+    /* ── Terminal mockup ── */
+    .terminal-wrap {
+      position: relative;
+      z-index: 1;
+      width: min(680px, 92vw);
+      margin: 0 auto 80px;
+      animation: fadeUp 0.7s 0.4s ease both;
+    }
+
+    .terminal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(88,166,255,0.06);
+    }
+
+    .terminal-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      background: #0d1117;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .terminal-dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+    }
+    .d-red   { background: #ff5f57; }
+    .d-yellow{ background: #febc2e; }
+    .d-green { background: #28c840; }
+
+    .terminal-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-left: 8px;
+    }
+
+    .terminal-body {
+      padding: 24px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.9;
+    }
+
+    .t-muted  { color: var(--muted); }
+    .t-blue   { color: var(--blue-bright); }
+    .t-green  { color: var(--green); }
+    .t-yellow { color: #e3b341; }
+    .t-white  { color: var(--text); }
+    .t-dim    { color: #484f58; }
+
+    /* ── Features ── */
+    .section {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 100px;
+    }
+
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--blue-bright);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 48px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .feature-card:hover {
+      border-color: rgba(88,166,255,0.4);
+      transform: translateY(-3px);
+    }
+
+    .feature-icon {
+      font-size: 1.6rem;
+      margin-bottom: 12px;
+    }
+
+    .feature-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .feature-card p {
+      font-size: 0.875rem;
+      color: var(--muted);
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    /* ── How it works ── */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      max-width: 600px;
+    }
+
+    .step {
+      display: flex;
+      gap: 20px;
+      position: relative;
+    }
+
+    .step-line {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    .step-num {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--blue);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.85rem;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 0 0 4px rgba(31,111,235,0.15);
+    }
+
+    .step-connector {
+      width: 2px;
+      flex: 1;
+      min-height: 32px;
+      background: var(--border);
+      margin: 4px 0;
+    }
+
+    .step:last-child .step-connector { display: none; }
+
+    .step-body {
+      padding-bottom: 32px;
+    }
+
+    .step-body h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      padding-top: 6px;
+    }
+
+    .step-body p {
+      font-size: 0.875rem;
+      color: var(--muted);
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    /* ── Requirements ── */
+    .req-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 14px;
+    }
+
+    .req-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .req-icon {
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    .req-card h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .req-card p {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.5;
+      font-weight: 400;
+    }
+
+    .req-card a {
+      color: var(--blue-bright);
+      text-decoration: none;
+      font-size: 0.78rem;
+    }
+
+    /* ── CTA ── */
+    .cta {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 80px 24px 100px;
+      background: linear-gradient(180deg, transparent, rgba(31,111,235,0.06) 50%, transparent);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cta h2 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      margin-bottom: 16px;
+    }
+
+    .cta p {
+      color: var(--muted);
+      font-size: 1rem;
+      margin-bottom: 32px;
+      font-weight: 400;
+    }
+
+    /* ── Footer ── */
+    footer {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 28px 48px;
+      border-top: 1px solid var(--border);
+    }
+
+    footer p {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    footer a {
+      color: var(--blue-bright);
+      text-decoration: none;
+      font-size: 0.8rem;
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      nav { padding: 14px 20px; }
+      .nav-links { gap: 16px; }
+      footer { padding: 20px; flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-logo">⬇ RepoClonerApp</div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#how">How it works</a>
+    <a href="#download">Download</a>
+    <a href="https://github.com/DhanushPapani/RepoClonerApp" target="_blank">GitHub</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="badge">
+    <span class="badge-dot"></span>
+    v1.0 — Windows · Free & Open Source
+  </div>
+
+  <h1>Clone any repo.<br><span>Push it. Yours.</span></h1>
+
+  <p class="hero-sub">
+    A desktop app to clone any public GitHub repository and push it directly
+    to your own GitHub account — no terminal, no commands, just one click.
+  </p>
+
+  <div class="hero-actions">
+    <a class="btn btn-primary" href="https://github.com/DhanushPapani/RepoClonerApp/releases/latest/download/RepoClonerApp.exe" id="download">
+      ⬇ Download .exe
+    </a>
+    <a class="btn btn-secondary" href="https://github.com/DhanushPapani/RepoClonerApp" target="_blank">
+      🐙 View on GitHub
+    </a>
+  </div>
+</section>
+
+<!-- Terminal mockup -->
+<div class="terminal-wrap">
+  <div class="terminal">
+    <div class="terminal-bar">
+      <div class="terminal-dot d-red"></div>
+      <div class="terminal-dot d-yellow"></div>
+      <div class="terminal-dot d-green"></div>
+      <span class="terminal-title">Output Log</span>
+    </div>
+    <div class="terminal-body">
+      <div><span class="t-muted">🔑  Validating GitHub token...</span></div>
+      <div><span class="t-green">✅  Authenticated as @DhanushPapani</span></div>
+      <div><span class="t-dim">───────────────────────────────────────</span></div>
+      <div><span class="t-blue">🚀  Processing 2 repo(s) — mode: push_new</span></div>
+      <div><span class="t-dim">───────────────────────────────────────</span></div>
+      <div><span class="t-white">[1/2]  python-basics-exercises</span></div>
+      <div><span class="t-muted">  ⬇️  Cloning from github.com/realpython/...</span></div>
+      <div><span class="t-green">  ✅  Cloned → Desktop/cloned-repos/python-basics-exercises</span></div>
+      <div><span class="t-muted">  🌐  Creating repo on GitHub...</span></div>
+      <div><span class="t-green">  ✅  https://github.com/DhanushPapani/python-basics-exercises</span></div>
+      <div><span class="t-muted">  🌿  Branch: master</span></div>
+      <div><span class="t-green">  ✅  Pushed → github.com/DhanushPapani/python-basics-exercises</span></div>
+      <div><span class="t-white">[2/2]  public-apis</span></div>
+      <div><span class="t-green">  ✅  Cloned → Desktop/cloned-repos/public-apis</span></div>
+      <div><span class="t-green">  ✅  Pushed → github.com/DhanushPapani/public-apis</span></div>
+      <div><span class="t-dim">───────────────────────────────────────</span></div>
+      <div><span class="t-yellow">🎉  All done!</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Features -->
+<section class="section" id="features">
+  <div class="section-label">// features</div>
+  <div class="section-title">Everything you need,<br>nothing you don't.</div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">⬇️</div>
+      <h3>Clone + Push in one flow</h3>
+      <p>Clone any public repo and push it to your GitHub account automatically — source and destination handled in a single click.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🐙</div>
+      <h3>GitHub API integration</h3>
+      <p>Creates the destination repo on your account via the GitHub API. No need to manually create repos first.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💾</div>
+      <h3>Persistent settings</h3>
+      <p>Your username, token and folder are saved locally and auto-loaded on every launch. Configure once, use forever.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">➕</div>
+      <h3>Multi-repo support</h3>
+      <p>Add multiple repositories and process them all in one batch. Folder names are auto-filled from the URL.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🌿</div>
+      <h3>Auto branch detection</h3>
+      <p>Automatically detects whether a repo uses <code>main</code> or <code>master</code> and pushes to the correct branch.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📦</div>
+      <h3>Standalone .exe</h3>
+      <p>No Python installation needed. Download, double-click, run. Just make sure Git is installed on your system.</p>
+    </div>
+  </div>
+</section>
+
+<!-- How it works -->
+<section class="section" id="how">
+  <div class="section-label">// how it works</div>
+  <div class="section-title">Up and running<br>in 3 steps.</div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-line">
+        <div class="step-num">1</div>
+        <div class="step-connector"></div>
+      </div>
+      <div class="step-body">
+        <h3>Download & open</h3>
+        <p>Download the <code>.exe</code> and double-click it. On first launch the Settings panel opens automatically asking for your GitHub username, Personal Access Token, and local folder.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-line">
+        <div class="step-num">2</div>
+        <div class="step-connector"></div>
+      </div>
+      <div class="step-body">
+        <h3>Paste a GitHub URL</h3>
+        <p>Enter one or more GitHub repo URLs. The folder name auto-fills from the URL. Select your action mode — clone only, push to a new repo, or push to an existing one.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-line">
+        <div class="step-num">3</div>
+        <div class="step-connector"></div>
+      </div>
+      <div class="step-body">
+        <h3>Hit Clone</h3>
+        <p>Watch the color-coded log as your repos are cloned, pushed and confirmed. The repo list clears automatically on success — ready for your next batch.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Requirements -->
+<section class="section">
+  <div class="section-label">// requirements</div>
+  <div class="section-title">What you need.</div>
+  <div class="req-grid">
+    <div class="req-card">
+      <div class="req-icon">🐙</div>
+      <div>
+        <h4>Git</h4>
+        <p>Must be installed and on your PATH.</p>
+        <a href="https://git-scm.com/download/win" target="_blank">↗ Download Git for Windows</a>
+      </div>
+    </div>
+    <div class="req-card">
+      <div class="req-icon">🔑</div>
+      <div>
+        <h4>GitHub PAT</h4>
+        <p>Personal Access Token with <code>repo</code> scope. Add <code>workflow</code> scope for repos with GitHub Actions.</p>
+        <a href="https://github.com/settings/tokens" target="_blank">↗ Generate a token</a>
+      </div>
+    </div>
+    <div class="req-card">
+      <div class="req-icon">🪟</div>
+      <div>
+        <h4>Windows</h4>
+        <p>Current release is Windows only. macOS and Linux can run from source using Python 3.8+.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta" id="download">
+  <h2>Ready to clone smarter?</h2>
+  <p>Free, open source, no install required.</p>
+  <div class="hero-actions" style="justify-content:center">
+    <a class="btn btn-primary" href="https://github.com/DhanushPapani/RepoClonerApp/releases/latest/download/RepoClonerApp.exe">
+      ⬇ Download RepoClonerApp.exe
+    </a>
+    <a class="btn btn-secondary" href="https://github.com/DhanushPapani/RepoClonerApp" target="_blank">
+      🐙 View Source
+    </a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <p>Built by <a href="https://github.com/DhanushPapani" target="_blank">@DhanushPapani</a> · MIT License</p>
+  <p><a href="https://github.com/DhanushPapani/RepoClonerApp/issues" target="_blank">Report an issue</a></p>
+</footer>
+
+</body>
+</html>

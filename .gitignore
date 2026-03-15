@@ -1,0 +1,20 @@
+# PyInstaller output
+dist/
+build/
+*.spec
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment
+venv/
+.env/
+
+# Exe files (too large for git)
+*.exe
+
+# OS files
+.DS_Store
+Thumbs.db
