@@ -45,7 +45,7 @@ jobs:
 
       - name: Build with PyInstaller
         run: |
-          pyinstaller --onefile --windowed --name=RepoClonerApp repo_cloner.py
+          pyinstaller --windowed --name=RepoClonerApp repo_cloner.py
 
       - name: Zip the .app bundle
         run: zip -r RepoClonerApp-mac.zip dist/RepoClonerApp.app
