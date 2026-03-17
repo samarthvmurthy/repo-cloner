@@ -475,8 +475,13 @@
 
     /* ── Responsive ── */
     @media (max-width: 600px) {
-      nav { padding: 14px 20px; }
-      .nav-links { gap: 16px; }
+      nav {
+        padding: 12px 20px;
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+      }
+      .nav-links { gap: 16px; flex-wrap: wrap; justify-content: center; }
       footer { padding: 20px; flex-direction: column; text-align: center; }
     }
   </style>
