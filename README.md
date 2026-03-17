@@ -1,14 +1,12 @@
 # repo-cloner 🐙⬇️
 
-A sleek desktop GUI tool to **clone any public GitHub repo and push it directly to your own GitHub account** — in one click. Built with Python and CustomTkinter, packaged as a standalone `.exe` (Windows) or `.app` (macOS).
-
-No terminal. No commands. Just paste, click, done.
+A sleek desktop GUI tool that takes the grunt work out of cloning and pushing GitHub repositories. No more repetitive terminal commands — just paste a URL and let the app handle the rest. Built with Python and CustomTkinter, packaged as a standalone `.exe` (Windows) or `.app` (macOS).
 
 ---
 
 ## Features
 
-- 🔗 **Clone + Push in one flow** — clone any public repo and push it to your GitHub automatically
+- 🔗 **Clone + Push in one flow** — skip the repetitive terminal steps; clone and push in a single click
 - 🐙 **GitHub API integration** — creates the destination repo on your account via the GitHub API
 - 💾 **Persistent settings** — username, token and folder are saved locally and auto-loaded on every launch
 - ⚙️ **Collapsible settings panel** — configure once, hidden on every subsequent run
