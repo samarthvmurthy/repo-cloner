@@ -1,6 +1,6 @@
 # RepoClonerApp 🐙⬇️
 
-A sleek desktop GUI tool to **clone any public GitHub repo and push it directly to your own GitHub account** — in one click. Built with Python and CustomTkinter, packaged as a standalone `.exe`.
+A sleek desktop GUI tool to **clone any public GitHub repo and push it directly to your own GitHub account** — in one click. Built with Python and CustomTkinter, packaged as a standalone `.exe` (Windows) or `.app` (macOS).
 
 No terminal. No commands. Just paste, click, done.
 
@@ -17,7 +17,7 @@ No terminal. No commands. Just paste, click, done.
 - 🎨 **Dark themed UI** — GitHub-inspired dark color scheme
 - 📋 **Color-coded log output** — green for success, red for errors, yellow for warnings
 - 🪟 **Resizable & scrollable** — works on any screen size, fully maximizable
-- 📦 **Standalone `.exe`** — no Python installation needed on the target machine
+- 📦 **Standalone binary** — `.exe` for Windows, `.app` for macOS; no Python installation needed on the target machine
 
 ---
 
@@ -46,21 +46,33 @@ pip install customtkinter requests pyinstaller
 python repo_cloner.py
 ```
 
-### Option 2 — Download the `.exe`
+### Option 2 — Download the pre-built binary
 
-Download `RepoClonerApp.exe` from the [Releases](../../releases) page. No Python needed — just requires **Git** to be installed.
+Download from the [Releases](../../releases) page. No Python needed — just requires **Git** to be installed.
+
+| Platform | File |
+|---|---|
+| Windows | `RepoClonerApp.exe` |
+| macOS | `RepoClonerApp-mac.zip` (extract and run `RepoClonerApp.app`) |
 
 ---
 
-## Build `.exe` yourself
+## Build yourself
 
-Make sure `repo_cloner.py` and `repocloner.ico` are in the same folder, then run:
+Make sure `repo_cloner.py`, `repocloner.ico`, and `repocloner.png` are in the same folder.
 
+**Windows:**
 ```bash
-pyinstaller --onefile --windowed --icon=repocloner.ico --add-data "repocloner.ico;." --name "RepoClonerApp" repo_cloner.py
+pyinstaller --onefile --windowed --icon=repocloner.ico --name=RepoClonerApp repo_cloner.py
 ```
+Your `.exe` will be in `dist/`.
 
-Your `.exe` will be in the `dist/` folder.
+**macOS:**
+```bash
+pyinstaller --windowed --name=RepoClonerApp repo_cloner.py
+zip -r RepoClonerApp-mac.zip dist/RepoClonerApp.app
+```
+Your `.app` bundle will be in `dist/`.
 
 ---
 
@@ -71,7 +83,8 @@ Your `.exe` will be in the `dist/` folder.
 2. Enter your **GitHub username** (e.g. `DhanushPapani`)
 3. Paste your **Personal Access Token (PAT)** — needs `repo` and `workflow` scopes
 4. Set your **local destination folder**
-5. Hit **💾 Save & Collapse**
+5. Select your **OS** (Windows or macOS — auto-detected)
+6. Hit **💾 Save & Collapse**
 
 > Generate a PAT at: [github.com/settings/tokens](https://github.com/settings/tokens)
 
@@ -91,8 +104,9 @@ The repo list clears automatically after a successful run.
 
 | Requirement | Details |
 |---|---|
-| Git | Must be installed and on PATH — [git-scm.com](https://git-scm.com/download/win) |
+| Git | Must be installed and on PATH — [git-scm.com](https://git-scm.com/downloads) |
 | GitHub PAT | Needs `repo` scope, `workflow` scope for repos with GitHub Actions |
+| OS | Windows (`.exe`) or macOS (`.app`); Linux run from source |
 | Python (dev only) | 3.8+ with `customtkinter`, `requests`, `pyinstaller` |
 
 ---
