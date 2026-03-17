@@ -1,4 +1,4 @@
-# RepoClonerApp 🐙⬇️
+# repo-cloner 🐙⬇️
 
 A sleek desktop GUI tool to **clone any public GitHub repo and push it directly to your own GitHub account** — in one click. Built with Python and CustomTkinter, packaged as a standalone `.exe` (Windows) or `.app` (macOS).
 
@@ -35,9 +35,9 @@ No terminal. No commands. Just paste, click, done.
 
 ```bash
 # Clone this repo
-git clone https://github.com/DhanushPapani/RepoClonerApp
+git clone https://github.com/samarthvmurthy/repo-cloner
 
-cd RepoClonerApp
+cd repo-cloner
 
 # Install dependencies
 pip install customtkinter requests pyinstaller
@@ -80,7 +80,7 @@ Your `.app` bundle will be in `dist/`.
 
 ### First time
 1. Open the app — the **Settings panel** opens automatically
-2. Enter your **GitHub username** (e.g. `DhanushPapani`)
+2. Enter your **GitHub username** (e.g. `samarthvmurthy`)
 3. Paste your **Personal Access Token (PAT)** — needs `repo` and `workflow` scopes
 4. Set your **local destination folder**
 5. Select your **OS** (Windows or macOS — auto-detected)
